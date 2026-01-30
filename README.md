@@ -18,12 +18,15 @@ little.
 The more I think about this the more I feel like I do want a terminal
 sessionizer lol, I need to learn more about tmux.
 
-Things I want to do:
+
+## Wish list
 
 - [ ] if i am on a dir and I just want to go to a scratch session I have been
   creating a new window and then cd-ing into ~/code. I have all of my scratch
   repos and sample files in there. When I want to test something it is always
   the same place so find something for that
+
+### Using charm
 
 I want to use [charmbracelet](https://github.com/charmbracelet/bubbletea) for
 the ui so I should look at the following:
@@ -33,3 +36,29 @@ the ui so I should look at the following:
 - example for auto complete (might be useful for filtering??, i do think that
   good smart filtering is going to be a bit hard and will require some good
   thought) for now I will leave it as simple list picker 
+
+### Using open code for the prototype
+
+I decided to use opencode to port my current bash script into a go program that
+uses charm bubbletea. This worked pretty well. It gave me general idea of things
+that I will need to consider.
+
+So from the code that I saw it did there were 3 main components to it (in no
+particular order of importance):
+
+1. the model for the bubbletea program (this only contained the list)
+2. a function to handle the discovery of the directories and appending them to
+   the list element of the model which it did right before launching the program
+   so it was not attached to the model type at all (that sounds ok I will have
+   to see how it does with loading search paths from a config file and when
+   bookmarks get introduced)
+3. the tmux session handler
+
+This tells me that I will prob want the following:
+
+- to have the path-picker model (which will be different from the dashboard and
+  it is currently the list model here).
+- an abstraction over tmux so I dont have to keep calling exec.Command() for
+  tmux stuff
+- either a utils file or file management file that will let me manage and handle
+  directory paths in a more granular way than just `filepath` and `os`
