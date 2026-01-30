@@ -17,7 +17,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         default = pkgs.mkShell {
-          packages = with pkgs; [ go ];
+          packages = with pkgs; [ go opencode ];
         };
       }
     );
