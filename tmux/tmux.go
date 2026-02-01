@@ -42,17 +42,16 @@ func SwitchClient(sessionName string) tea.Cmd {
 
 // New session will be created with specified name at provided workingDirectory
 func NewSession(sessionName, workingDirectory string, detached bool) tea.Cmd {
-	conditionalDetached := ""
+	sessionFlags := "-s"
 	if detached {
-		conditionalDetached = "-d"
+		sessionFlags = "-ds"
 	}
 
 	return tea.ExecProcess(
 		tmux(
 			"new-session",
-			"-s", sessionName, 
+			sessionFlags, sessionName, 
 			"-c", workingDirectory,
-			conditionalDetached,
 		),
 		execCallback,
 	) 
