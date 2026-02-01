@@ -14,7 +14,8 @@ var rootCmd = &cobra.Command {
 	Short: "terminal sessionizer extending tmux",
 	Run: func (cmd *cobra.Command, args []string) {
 		p := tea.NewProgram(picker.New(), tea.WithAltScreen())
-		if _, err := p.Run(); err != nil {
+		if pi, err := p.Run(); err != nil {
+			fmt.Printf("%v\n", pi.(picker.Picker).Err)
 			fmt.Printf("Encountered an error when trying to run the directory picker: %v\n", err)
 		}
 	},

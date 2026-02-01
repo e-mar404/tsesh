@@ -3,10 +3,13 @@ package tmux
 import (
 	"os"
 	"os/exec"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // TODO: ideas
 // check out session groups and see if I can implement a shortcut to add a new session to a group
+type TmuxMsg struct { Err error }
 
 // Checked environment variable $TMUX to determine if user is currently inside a tmux session
 func Inside() bool {
@@ -22,32 +25,37 @@ func HasSession(targetSession string) bool {
 }
 
 // Attach session if outside of tmux
-func Attach(sessionName string) error {
-	cmd := tmux("attach-session", "-t", sessionName)
-	return cmd.Run()
+func Attach(sessionName string) tea.Cmd {
+	return tea.ExecProcess(
+		tmux("attach-session", "-t", sessionName),
+		execCallback,
+	)
 }
 
 // Move active session to existing session if inside tmux 
-func SwitchClient(sessionName string) error {
-	cmd:= tmux("switch-client", "-t", sessionName)
-	return cmd.Run()
+func SwitchClient(sessionName string) tea.Cmd {
+	return tea.ExecProcess(
+		tmux("switch-client", "-t", sessionName),
+		execCallback,
+	)
 }
 
 // New session will be created with specified name at provided workingDirectory
-func NewSession(sessionName, workingDirectory string, detached bool) error {
+func NewSession(sessionName, workingDirectory string, detached bool) tea.Cmd {
 	conditionalDetached := ""
 	if detached {
 		conditionalDetached = "-d"
 	}
 
-	cmd := tmux(
-		"new-session",
-		"-s", sessionName, 
-		"-c", workingDirectory,
-		conditionalDetached,
-	)
-
-	return cmd.Run()
+	return tea.ExecProcess(
+		tmux(
+			"new-session",
+			"-s", sessionName, 
+			"-c", workingDirectory,
+			conditionalDetached,
+		),
+		execCallback,
+	) 
 }
 
 func tmux(args... string) *exec.Cmd {
@@ -56,4 +64,10 @@ func tmux(args... string) *exec.Cmd {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd
+}
+
+func execCallback(err error) tea.Msg {
+	return TmuxMsg {
+		Err: err,
+	}
 }

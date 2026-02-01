@@ -26,7 +26,8 @@ func (i Item) Description() string {
 }
 
 type Picker struct {
-	list list.Model
+	List list.Model
+	Err error
 }
 
 func (p Picker) Init() tea.Cmd {
@@ -37,7 +38,7 @@ func (p Picker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		p.list.SetSize(msg.Width, msg.Height)
+		p.List.SetSize(msg.Width, msg.Height)
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -45,37 +46,42 @@ func (p Picker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, tea.Quit
 
 		case "enter":
-			if p.list.SelectedItem() == nil {
+			if p.List.SelectedItem() == nil {
 				return p, tea.Quit
 			}
 
-			choice := p.list.SelectedItem().(Item)
+			choice := p.List.SelectedItem().(Item)
+
 			switch tmux.HasSession(choice.Name) {
 			case true:
 				if tmux.Inside() {
-					tmux.SwitchClient(choice.Name)
-					return p, nil
+					return p, tmux.SwitchClient(choice.Name)
 				}
-				tmux.Attach(choice.Name)
+				return p, tmux.Attach(choice.Name)
 
 			case false:
 				if tmux.Inside() {
-					tmux.NewSession(choice.Name, choice.Path, true)
-					tmux.SwitchClient(choice.Name)
-					return p, nil
+					return p, tea.Sequence(
+						tmux.NewSession(choice.Name, choice.Path, true),
+						tmux.SwitchClient(choice.Name),
+					)
 				}
-				tmux.NewSession(choice.Name, choice.Path, false)
+				return p, tmux.NewSession(choice.Name, choice.Path, false)
 			}
 		}
+	
+	case tmux.TmuxMsg:
+		p.Err = msg.Err
+		return p, tea.Quit
 	}
 
-	p.list, cmd = p.list.Update(msg)
+	p.List, cmd = p.List.Update(msg)
 	
 	return p, cmd
 }
 
 func (p Picker) View() string {
-	return p.list.View()
+	return p.List.View()
 }
 
 func New() Picker {
@@ -88,7 +94,7 @@ func New() Picker {
 	}
 
 	return Picker{
-		list: list.New(
+		List: list.New(
 			findDirectories(searchPaths),
 			list.NewDefaultDelegate(),
 			0,
