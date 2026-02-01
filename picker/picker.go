@@ -8,17 +8,17 @@ import (
 
 // Wrapper for list.Item to add extra fields
 type Item struct {
-	Name string
+	SessionName string
 	Path string
 	// TODO: at some point I should also add a configuration var for code that should be executed before and after entering the tmux session
 }
 
 func (i Item) FilterValue() string {
-	return i.Name
+	return i.SessionName
 }
 
 func (i Item) Title() string {
-	return i.Name
+	return i.SessionName
 }
 
 func (i Item) Description() string {
@@ -52,21 +52,21 @@ func (p Picker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			choice := p.List.SelectedItem().(Item)
 
-			switch tmux.HasSession(choice.Name) {
+			switch tmux.HasSession(choice.SessionName) {
 			case true:
 				if tmux.Inside() {
-					return p, tmux.SwitchClient(choice.Name)
+					return p, tmux.SwitchClient(choice.SessionName)
 				}
-				return p, tmux.Attach(choice.Name)
+				return p, tmux.Attach(choice.SessionName)
 
 			case false:
 				if tmux.Inside() {
 					return p, tea.Sequence(
-						tmux.NewSession(choice.Name, choice.Path, true),
-						tmux.SwitchClient(choice.Name),
+						tmux.NewSession(choice.SessionName, choice.Path, true),
+						tmux.SwitchClient(choice.SessionName),
 					)
 				}
-				return p, tmux.NewSession(choice.Name, choice.Path, false)
+				return p, tmux.NewSession(choice.SessionName, choice.Path, false)
 			}
 		}
 	
@@ -85,12 +85,10 @@ func (p Picker) View() string {
 }
 
 func New() Picker {
-	// TODO: this is were I should load the files from the config
-	// for now they will be hardcoded
-	searchPaths := []string{
+	searchPaths := []string {
 		"~/",
-		"~/code",
 		"~/projects",
+		"~/code",
 	}
 
 	return Picker{

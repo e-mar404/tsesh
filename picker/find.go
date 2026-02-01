@@ -19,9 +19,8 @@ func expandPath(path string) string {
 	return expanded 
 }
 
-// TODO: pull config and ignore any dirs that dont need to be pulled
-// TODO: add sanitize step to get rid of . and ~ in the name since session names cant have that
 func findDirectories(searchPaths []string) []list.Item {
+	m := make(map[string]Item)
 	dirList := []list.Item{}
 	for _, root := range searchPaths {
 		expandedRoot:= expandPath(root)
@@ -34,11 +33,18 @@ func findDirectories(searchPaths []string) []list.Item {
 				return nil
 			}
 
-			item := Item{
-				Name: d.Name(), // use utils to get directory name
-				Path: path, 
+			sessionName := d.Name()
+			if strings.Contains(d.Name(), ".") {
+				sessionName = "_" + sessionName[1:]	
 			}
-			dirList = append(dirList, item)
+			if ok := m[sessionName]; ok == (Item{}) {
+				item := Item {
+					SessionName: sessionName, 
+					Path: path, 
+				}
+				dirList = append(dirList, item)
+				m[sessionName] = item
+			}
 
 			// Needs to be after directory has been added to keep the search to a max depth of 1
 			if d.IsDir() && path != expandedRoot {
