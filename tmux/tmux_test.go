@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestHasSessionArgs(t *testing.T) {
-	cmdRunner = mockCommand
+	cmdRunner = mockCommandWithExitCode(0)
 	HasSession("test")
 	expectedArgs := []string{"has-session", "-t", "test"}
 	if !reflect.DeepEqual(capturedArgs, expectedArgs) {
@@ -31,6 +31,7 @@ func TestHasSessionArgs(t *testing.T) {
 
 /* 
 HasSession:
+	✓ TestHasSessionArgs
 	- TestHasSessionExists
 	- TestHasSessionDoesNotExist
 
@@ -56,12 +57,17 @@ SwitchClient:
 	- TestSwitchClientDoesNotExist
 */
 
-func mockCommand(command string, args...string) *exec.Cmd {
-	testBinary := os.Args[0]
-	cs := []string{"--", command}
-	cs = append(cs, args...) 
-	capturedArgs = args
-	cmd := exec.Command(testBinary, cs...)
-	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
-	return cmd
+func mockCommandWithExitCode(exitCode int) (func(string, ...string) *exec.Cmd) {
+	return func(command string, args...string) *exec.Cmd {
+		testBinary := os.Args[0]
+		cs := []string{"--", command}
+		cs = append(cs, args...) 
+		capturedArgs = args
+		cmd := exec.Command(testBinary, cs...)
+		cmd.Env = []string{
+			"GO_WANT_HELPER_PROCESS=1",
+			fmt.Sprintf("MOCK_CMD_EXIT_CODE=%d", exitCode),
+		}
+		return cmd
+	}
 }
