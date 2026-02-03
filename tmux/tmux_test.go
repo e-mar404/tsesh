@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-/* 
+/*
 
 SwitchClient:
 	- TestSwitchClientArgs
@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 		} else {
 			exitCode, _ = strconv.Atoi(codeStr)
 		}
-
+		
 		os.Exit(exitCode)
 	}
 
@@ -67,8 +67,8 @@ func withExitCodeOne(cmd *exec.Cmd) *exec.Cmd {
 	return cmd
 }
 
-func insideTmux(cmd *exec.Cmd) *exec.Cmd {
-	cmd.Env = append(cmd.Env, "TMUX=/run/user/100/tmux-1000/default,0000,0")
+func withNonExistingSession(cmd *exec.Cmd) *exec.Cmd {
+	cmd.Err = ErrSessionNotFound
 	return cmd
 }
 
