@@ -31,3 +31,5 @@ make it a go cli.
   the same place so find something for that
 
 - [ ] deploy app with nix flake and not just develop capability
+
+- [ ] check out session groups and see if I can implement a shortcut to add a new session to a group

@@ -9,16 +9,13 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// TODO: ideas
-// check out session groups and see if I can implement a shortcut to add a new session to a group
-
 type TmuxMsg struct { Err error }
 
 var cmdRunner = exec.Command
 var ErrNestedSession = errors.New("sessions should be nested with care, unset $TMUX to force")
 var ErrSessionNotFound = errors.New("session was not found")
 
-// Checked environment variable $TMUX to determine if user is currently inside a tmux session
+// Checks environment variable $TMUX to determine if user is currently inside a tmux session
 func Inside() bool {
 	val, _ := os.LookupEnv("TMUX")
 	return val != ""
