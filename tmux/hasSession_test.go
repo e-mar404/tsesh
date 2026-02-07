@@ -25,8 +25,9 @@ func TestHasSession(t *testing.T) {
 	}
 
 	for name, tc := range tt {
+		capturedArgs = nil
+
 		t.Run(name, func(t *testing.T) {
-			capturedArgs = nil
 			cmdRunner = tc.cmdRunner
 			res := HasSession("session-name")
 

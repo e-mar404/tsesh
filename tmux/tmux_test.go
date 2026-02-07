@@ -11,15 +11,6 @@ import (
 )
 
 /*
-SwitchClient:
-	- TestSwitchClientArgs
-	- TestSwitchClientOutsideTmux
-	- TestSwitchClientInsideTmux
-	- TestSwitchClientExist
-	- TestSwitchClientDoesNotExist
-*/
-
-/*
 Taking inspiration from bubbletea/exec_test.go of making a small tea program to see if the error gets returned properly
 */
 
@@ -113,6 +104,11 @@ func withNonExistingSession(cmd *exec.Cmd) *exec.Cmd {
 
 func withDuplicateSession(cmd *exec.Cmd) *exec.Cmd {
 	cmd.Err = fmt.Errorf("duplicate session")
+	return cmd
+}
+
+func withNoClient(cmd *exec.Cmd) *exec.Cmd {
+	cmd.Err = fmt.Errorf("no client found")
 	return cmd
 }
 

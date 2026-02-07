@@ -10,40 +10,42 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func TestAttach(t *testing.T) {
+func TestSwitchClient(t *testing.T) {
 	tt := map[string]tmuxTest {
-		"existing session outside tmux": {
-			insideTmux: false,
-			cmdRunner: mockCommand(),
-			expectedArgs: []string{"attach-session", "-t", "session-name"},
-			expectedErr: nil,
-		},
 		"existing session inside tmux": {
 			insideTmux: true,
 			cmdRunner: mockCommand(),
-			expectedArgs: nil,
-			expectedErr: ErrNestedSession,
+			expectedArgs: []string{"switch-client", "-t", "session-name"},
+			expectedErr: nil,
 		},
-		"non-existing session outside tmux": {
+		"existing session outside tmux": {
 			insideTmux: false,
 			cmdRunner: mockCommand(
-				withNonExistingSession,
+				withNoClient,
 			),
-			expectedArgs: []string{"attach-session", "-t", "session-name"},
-			expectedErr: ErrSessionNotFound,
+			expectedArgs: []string{"switch-client", "-t", "session-name"},
+			expectedErr: ErrNoClientFound,
 		},
 		"non-existing session inside tmux": {
 			insideTmux: true,
 			cmdRunner: mockCommand(
 				withNonExistingSession,
 			),
-			expectedArgs: nil,
-			expectedErr: ErrNestedSession,
+			expectedArgs: []string{"switch-client", "-t", "session-name"},
+			expectedErr: ErrSessionNotFound,
+		},
+		"non-existing session outside tmux": {
+			insideTmux: false,
+			cmdRunner: mockCommand(
+				withNoClient,
+			),
+			expectedArgs: []string{"switch-client", "-t", "session-name"},
+			expectedErr: ErrNoClientFound,
 		},
 	}
 
 	for name, tc := range tt {
-		capturedArgs = nil 
+		capturedArgs = nil
 
 		t.Run(name, func(t *testing.T) {
 			tmuxEnvStr := ""
@@ -52,24 +54,23 @@ func TestAttach(t *testing.T) {
 			}
 			t.Setenv("TMUX", tmuxEnvStr)
 
-			cmdRunner = tc.cmdRunner
+			cmdRunner = tc.cmdRunner	
 			initModel := model {
-				testCmd: func () tea.Cmd {
-					return Attach("session-name")
+				testCmd: func() tea.Cmd {
+					return SwitchClient("session-name")
 				},
 			}
-			
-			var in, out bytes.Buffer 
+
+			var in, out bytes.Buffer
 			p := tea.NewProgram(initModel, tea.WithInput(&in), tea.WithOutput(&out))
 			outModel, _ := p.Run()
 			finalModel := outModel.(model)
-			
+
 			if !errors.Is(tc.expectedErr, finalModel.Err) {
-				fmt.Printf("tea.Cmd returned something unexpected\n")
 				fmt.Printf("expected: %v, got: %v\n", tc.expectedErr, finalModel.Err)
 				t.FailNow()
 			}
-
+			
 			if !reflect.DeepEqual(tc.expectedArgs, capturedArgs) {
 				failArgsDoNotMatch(t, tc.expectedArgs, capturedArgs)
 			}

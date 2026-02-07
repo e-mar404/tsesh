@@ -15,6 +15,7 @@ var cmdRunner = exec.Command
 var ErrNestedSession = errors.New("sessions should be nested with care, unset $TMUX to force")
 var ErrSessionNotFound = errors.New("session was not found")
 var ErrDuplicateSession = errors.New("duplicateSession")
+var ErrNoClientFound = errors.New("no client found")
 
 // Checks environment variable $TMUX to determine if user is currently inside a tmux session
 func Inside() bool {
@@ -49,18 +50,8 @@ func SwitchClient(sessionName string) tea.Cmd {
 	)
 }
 
-// New session will be created with specified name at provided workingDirectory
-/*
-TODO:
-needs to be re written to account if it is inside tmux or not
-if it is inside tmux then return a sequence of new-session (detached) and then switch-client but if it is outside tmux then just new-session (not detached)
-
-This way on picker.go if there is no existing session it can just call tmux.NewSession()
-
-This will change how it is tested so I will leave that till the end, the other ones are free to create tests for since those do not need this much conditional branching
-*/
+// New session will be created with specified name at provided workingDirectory and automatically switched after creation
 func NewSession(sessionName, workingDirectory string) tea.Cmd {
-	// use Inside() instead of detached to determine how it is ran
 	sessionFlags := "-s"
 	if Inside() {
 		sessionFlags = "-ds"
@@ -91,13 +82,16 @@ func execCallback(err error) tea.Msg {
 			Err: nil,
 		}
 	}
-
+		
 	var tmuxErr error
 	if strings.Contains(err.Error(), "can't find session") {
 		tmuxErr = ErrSessionNotFound
 	} 
 	if strings.Contains(err.Error(), "duplicate session") {
 		tmuxErr = ErrDuplicateSession
+	}
+	if strings.Contains(err.Error(), "no client found") {
+		tmuxErr = ErrNoClientFound
 	}
 
 	return TmuxMsg {
