@@ -60,13 +60,12 @@ func (p Picker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return p, tmux.Attach(choice.SessionName)
 
 			case false:
+				var cmds []tea.Cmd
+				cmds = append(cmds, tmux.NewSession(choice.SessionName, choice.Path))
 				if tmux.Inside() {
-					return p, tea.Sequence(
-						tmux.NewSession(choice.SessionName, choice.Path),
-						tmux.SwitchClient(choice.SessionName),
-					)
+					cmds = append(cmds, tmux.SwitchClient(choice.SessionName))
 				}
-				return p, tmux.NewSession(choice.SessionName, choice.Path)
+				return p, tea.Sequence(cmds...) 
 			}
 		}
 	

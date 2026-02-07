@@ -50,14 +50,13 @@ func SwitchClient(sessionName string) tea.Cmd {
 	)
 }
 
-// New session will be created with specified name at provided workingDirectory and automatically switched after creation
+// New session will be created with specified name at provided workingDirectory
 func NewSession(sessionName, workingDirectory string) tea.Cmd {
 	sessionFlags := "-s"
 	if Inside() {
 		sessionFlags = "-ds"
 	}
 
-	// use a cmds []tea.Cmd that will append appropriate cmds based on Inside() 
 	return tea.ExecProcess(
 		tmux(
 			"new-session",
