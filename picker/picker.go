@@ -83,13 +83,7 @@ func (p Picker) View() string {
 	return p.List.View()
 }
 
-func New() Picker {
-	searchPaths := []string {
-		"~/",
-		"~/projects",
-		"~/code",
-	}
-
+func New(searchPaths []string) Picker {
 	return Picker{
 		List: list.New(
 			findDirectories(searchPaths),

@@ -6,6 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.3.4
 	github.com/spf13/cobra v1.10.2
+	github.com/yuin/gopher-lua v1.1.1
 )
 
 require (
