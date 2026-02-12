@@ -27,6 +27,7 @@ func findDirectories(searchPaths []string) []list.Item {
 		filepath.WalkDir(expandedRoot, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				fmt.Printf("error while walking dir: %v\n", err)
+				return nil
 			}
 
 			if !d.IsDir() {
