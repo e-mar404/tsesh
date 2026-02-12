@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Tmux sessionizer writen in go";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -17,7 +17,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         default = pkgs.mkShell {
-          packages = with pkgs; [ go tmux opencode ];
+          packages = with pkgs; [ go tmux ];
         };
       }
     );
