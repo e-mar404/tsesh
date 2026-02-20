@@ -1,0 +1,13 @@
+# THIS IS NOT IMPLEMENTED YET, IF THIS IS ON THE CONFIG PATH IT WILL NOT DO ANYTHING YET
+[search]
+paths = [
+  "~", # ~ is expanded automatically
+  "~/projects",
+  "~/work"
+]
+
+# Go RE2 regex
+# This pattern will be tested against the directory name and not the directory path
+ignore_pattern = "^(\.git|node_modules|dist|build)$"
+
+max_depth = 1
