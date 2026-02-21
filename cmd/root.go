@@ -5,11 +5,13 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/e-mar404/tsesh/config"
 	"github.com/e-mar404/tsesh/picker"
 	"github.com/spf13/cobra"
 )
 
 var (
+	cfg *config.Config
 	rootCmd = &cobra.Command{
 		Use:   "tsesh",
 		Short: "terminal sessionizer extending tmux",
@@ -30,8 +32,19 @@ var (
 )
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Printf("could not execute command: %v\n", err)
-		os.Exit(1)
-	}
+	err := rootCmd.Execute()
+	cobra.CheckErr(err)
+}
+
+func init() {
+	cobra.OnInitialize(initConfig)
+}
+
+func initConfig() {
+	_, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
+	// check for config file 
+	// if it doesnt exist then make a default with config.CreateDefault()
+	// else load config file and save into cfg *Config
 }
