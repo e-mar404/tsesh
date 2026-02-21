@@ -12,7 +12,3 @@ paths = [
 ignore_pattern = "^(\.git|node_modules|dist|build)$"
 
 ignore_hidden = true
-max_depth = 1
-
-[picker]
-default_view = "fullscreen" # [fullscreen|inline]

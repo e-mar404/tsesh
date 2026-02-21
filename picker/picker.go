@@ -3,6 +3,7 @@ package picker
 import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/e-mar404/tsesh/config"
 	"github.com/e-mar404/tsesh/tmux"
 )
 
@@ -83,10 +84,10 @@ func (p Picker) View() string {
 	return p.List.View()
 }
 
-func New(searchPaths []string) Picker {
+func New(cfg *config.Config) Picker {
 	return Picker{
 		List: list.New(
-			findDirectories(searchPaths),
+			findDirectories(cfg.Search),
 			list.NewDefaultDelegate(),
 			0,
 			0,

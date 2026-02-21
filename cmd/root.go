@@ -11,17 +11,12 @@ import (
 )
 
 var (
-	cfg *config.Config
+	cfg     = &config.Config{}
 	rootCmd = &cobra.Command{
 		Use:   "tsesh",
 		Short: "terminal sessionizer extending tmux",
 		Run: func(cmd *cobra.Command, args []string) {
-			searchPaths := []string{
-				"~/",
-				"~/projects",
-			}
-
-			p := tea.NewProgram(picker.New(searchPaths), tea.WithAltScreen())
+			p := tea.NewProgram(picker.New(cfg), tea.WithAltScreen())
 			if pi, err := p.Run(); err != nil {
 				fmt.Printf("%v\n", pi.(picker.Picker).Err)
 				fmt.Printf("Encountered an error when trying to run the directory picker: %v\n", err)
@@ -41,10 +36,11 @@ func init() {
 }
 
 func initConfig() {
-	_, err := os.UserHomeDir()
-	cobra.CheckErr(err)
+	if !config.Exists() {
+		err := config.CreateDefault()
+		cobra.CheckErr(err)
+	}
 
-	// check for config file 
-	// if it doesnt exist then make a default with config.CreateDefault()
-	// else load config file and save into cfg *Config
+	err := config.LoadInto(cfg)
+	cobra.CheckErr(err)
 }

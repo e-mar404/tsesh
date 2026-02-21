@@ -5,9 +5,11 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/e-mar404/tsesh/config"
 )
 
 func expandPath(path string) string {
@@ -19,10 +21,10 @@ func expandPath(path string) string {
 	return expanded
 }
 
-func findDirectories(searchPaths []string) []list.Item {
+func findDirectories(cfg config.Search) []list.Item {
 	m := make(map[string]Item)
 	dirList := []list.Item{}
-	for _, root := range searchPaths {
+	for _, root := range cfg.Paths {
 		expandedRoot := expandPath(root)
 		filepath.WalkDir(expandedRoot, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
@@ -35,9 +37,19 @@ func findDirectories(searchPaths []string) []list.Item {
 			}
 
 			sessionName := d.Name()
+			match, err := regexp.MatchString(cfg.IgnorePattern, sessionName)
+			if match {
+				return filepath.SkipDir
+			}
+
+			if strings.HasPrefix(sessionName, ".") && cfg.IgnoreHidden {
+				return filepath.SkipDir
+			}
+
 			if strings.Contains(d.Name(), ".") {
 				sessionName = "_" + sessionName[1:]
 			}
+
 			if ok := m[sessionName]; ok == (Item{}) {
 				item := Item{
 					SessionName: sessionName,
