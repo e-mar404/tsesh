@@ -21,7 +21,7 @@ func expandPath(path string) string {
 	return expanded
 }
 
-func findDirectories(cfg config.Search) []list.Item {
+func searchPaths(cfg config.Search) []list.Item {
 	m := make(map[string]Item)
 	dirList := []list.Item{}
 	for _, root := range cfg.Paths {

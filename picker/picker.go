@@ -87,7 +87,7 @@ func (p Picker) View() string {
 func New(cfg *config.Config) Picker {
 	return Picker{
 		List: list.New(
-			findDirectories(cfg.Search),
+			searchPaths(cfg.Search),
 			list.NewDefaultDelegate(),
 			0,
 			0,
