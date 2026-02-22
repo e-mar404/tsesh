@@ -2,6 +2,7 @@ package picker
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 
@@ -14,19 +15,24 @@ type searchTest struct {
 	expectedList []list.Item
 }
 
+func TestWorkingDir(t *testing.T) {
+	dir, _ := os.Getwd()
+	fmt.Printf("working dir %v\n", dir)
+}
+
 func TestSessionName(t *testing.T) {
 	tt := []searchTest{
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search/.emptyHiddenDir",
+					"testdata/search/.emptyHiddenDir",
 				},
 				IgnoreHidden: false,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "_emptyHiddenDir",
-					Path:        "../testData/search/.emptyHiddenDir",
+					Path:        "testdata/search/.emptyHiddenDir",
 				},
 			},
 		},
@@ -47,75 +53,75 @@ func TestHiddenDirs(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search",
+					"testdata/search",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "search",
-					Path:        "../testData/search",
+					Path:        "testdata/search",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "../testData/search/dir",
+					Path:        "testdata/search/dir",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search",
-					"../testData/search/.hiddenDir",
+					"testdata/search",
+					"testdata/search/.hiddenDir",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "search",
-					Path:        "../testData/search",
+					Path:        "testdata/search",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "../testData/search/dir",
+					Path:        "testdata/search/dir",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "../testData/search/.hiddenDir",
+					Path:        "testdata/search/.hiddenDir",
 				},
 				Item{
 					SessionName: "002-two",
-					Path:        "../testData/search/.hiddenDir/002-two",
+					Path:        "testdata/search/.hiddenDir/002-two",
 				},
 				Item{
 					SessionName: "003-three",
-					Path:        "../testData/search/.hiddenDir/003-three",
+					Path:        "testdata/search/.hiddenDir/003-three",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search",
+					"testdata/search",
 				},
 				IgnoreHidden: false,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "search",
-					Path:        "../testData/search",
+					Path:        "testdata/search",
 				},
 				Item{
 					SessionName: "_emptyHiddenDir",
-					Path:        "../testData/search/.emptyHiddenDir",
+					Path:        "testdata/search/.emptyHiddenDir",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "../testData/search/.hiddenDir",
+					Path:        "testdata/search/.hiddenDir",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "../testData/search/dir",
+					Path:        "testdata/search/dir",
 				},
 			},
 		},
@@ -135,7 +141,7 @@ func TestNonExistingDir(t *testing.T) {
 	tc := searchTest{
 		cfg: config.Search{
 			Paths: []string{
-				"../testData/search/nonExisting",
+				"testdata/search/nonExisting",
 			},
 		},
 		expectedList: []list.Item{},
@@ -154,40 +160,40 @@ func TestIgnorePattern(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search",
-					"../testData/search/dir",
+					"testdata/search",
+					"testdata/search/dir",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "search",
-					Path:        "../testData/search",
+					Path:        "testdata/search",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "../testData/search/dir",
+					Path:        "testdata/search/dir",
 				},
 				Item{
 					SessionName: "001-hello",
-					Path:        "../testData/search/dir/001-hello",
+					Path:        "testdata/search/dir/001-hello",
 				},
 				Item{
 					SessionName: "002-world",
-					Path:        "../testData/search/dir/002-world",
+					Path:        "testdata/search/dir/002-world",
 				},
 				Item{
 					SessionName: "003-go",
-					Path:        "../testData/search/dir/003-go",
+					Path:        "testdata/search/dir/003-go",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"../testData/search",
-					"../testData/search/dir",
-					"../testData/search/.hiddenDir",
+					"testdata/search",
+					"testdata/search/dir",
+					"testdata/search/.hiddenDir",
 				},
 				IgnoreHidden:  true,
 				IgnorePattern: "hello|world|002",
@@ -195,23 +201,23 @@ func TestIgnorePattern(t *testing.T) {
 			expectedList: []list.Item{
 				Item{
 					SessionName: "search",
-					Path:        "../testData/search",
+					Path:        "testdata/search",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "../testData/search/dir",
+					Path:        "testdata/search/dir",
 				},
 				Item{
 					SessionName: "003-go",
-					Path:        "../testData/search/dir/003-go",
+					Path:        "testdata/search/dir/003-go",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "../testData/search/.hiddenDir",
+					Path:        "testdata/search/.hiddenDir",
 				},
 				Item{
 					SessionName: "003-three",
-					Path:        "../testData/search/.hiddenDir/003-three",
+					Path:        "testdata/search/.hiddenDir/003-three",
 				},
 			},
 		},
