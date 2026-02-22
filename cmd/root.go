@@ -5,8 +5,8 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/e-mar404/tsesh/config"
-	"github.com/e-mar404/tsesh/picker"
+	"github.com/e-mar404/tsesh/internal/config"
+	"github.com/e-mar404/tsesh/internal/picker"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +33,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(loadConfig)
+
+	rootCmd.AddCommand(addCmd)
 }
 
 func loadConfig() {

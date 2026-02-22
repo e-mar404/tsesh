@@ -3,8 +3,8 @@ package picker
 import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/e-mar404/tsesh/config"
-	"github.com/e-mar404/tsesh/tmux"
+	"github.com/e-mar404/tsesh/internal/config"
+	"github.com/e-mar404/tsesh/internal/tmux"
 )
 
 // Wrapper for list.Item to add extra fields

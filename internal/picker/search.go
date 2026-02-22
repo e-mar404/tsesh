@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/e-mar404/tsesh/config"
+	"github.com/e-mar404/tsesh/internal/config"
 )
 
 func expandPath(path string) string {

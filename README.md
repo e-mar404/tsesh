@@ -65,13 +65,13 @@ will be able to be changed but for now this is static.
 
 - testing
     - [x] tmux (since I found a cool new way to test exec.Command)
-    - [ ] search.go (have to make sure the file name is okay and returns proper
+    - [x] search.go (have to make sure the file name is okay and returns proper
       session names)
     - [ ] bubbletea program?
 
 - ci/cd
-    - [ ] check for failing tests
-    - [ ] check gofmt
+    - [x] check for failing tests
+    - [x] check gofmt
 
 - config file
     - [x] check for config file existence
@@ -85,7 +85,6 @@ will be able to be changed but for now this is static.
     - [ ] `add [path|url]` adds the current path to bookmarks
     - [ ] `bookmarks` will display saved bookmarks
     - [ ] `open [string|int]` open specified bookmark
-    - [ ] `config` edit configuration
 
 ### Stage 2
 

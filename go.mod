@@ -3,6 +3,7 @@ module github.com/e-mar404/tsesh
 go 1.24.0
 
 require (
+	github.com/adrg/xdg v0.5.3
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.3.4
 	github.com/pelletier/go-toml/v2 v2.2.4
