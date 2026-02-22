@@ -25,14 +25,14 @@ func TestSessionName(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search/.emptyHiddenDir",
+					"testdata/.emptyHiddenDir",
 				},
 				IgnoreHidden: false,
 			},
 			expectedList: []list.Item{
 				Item{
 					SessionName: "_emptyHiddenDir",
-					Path:        "testdata/search/.emptyHiddenDir",
+					Path:        "testdata/.emptyHiddenDir",
 				},
 			},
 		},
@@ -53,75 +53,75 @@ func TestHiddenDirs(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search",
+					"testdata",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "search",
-					Path:        "testdata/search",
+					SessionName: "testdata",
+					Path:        "testdata",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "testdata/search/dir",
+					Path:        "testdata/dir",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search",
-					"testdata/search/.hiddenDir",
+					"testdata",
+					"testdata/.hiddenDir",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "search",
-					Path:        "testdata/search",
+					SessionName: "testdata",
+					Path:        "testdata",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "testdata/search/dir",
+					Path:        "testdata/dir",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "testdata/search/.hiddenDir",
+					Path:        "testdata/.hiddenDir",
 				},
 				Item{
 					SessionName: "002-two",
-					Path:        "testdata/search/.hiddenDir/002-two",
+					Path:        "testdata/.hiddenDir/002-two",
 				},
 				Item{
 					SessionName: "003-three",
-					Path:        "testdata/search/.hiddenDir/003-three",
+					Path:        "testdata/.hiddenDir/003-three",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search",
+					"testdata",
 				},
 				IgnoreHidden: false,
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "search",
-					Path:        "testdata/search",
+					SessionName: "testdata",
+					Path:        "testdata",
 				},
 				Item{
 					SessionName: "_emptyHiddenDir",
-					Path:        "testdata/search/.emptyHiddenDir",
+					Path:        "testdata/.emptyHiddenDir",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "testdata/search/.hiddenDir",
+					Path:        "testdata/.hiddenDir",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "testdata/search/dir",
+					Path:        "testdata/dir",
 				},
 			},
 		},
@@ -141,7 +141,7 @@ func TestNonExistingDir(t *testing.T) {
 	tc := searchTest{
 		cfg: config.Search{
 			Paths: []string{
-				"testdata/search/nonExisting",
+				"testdata/nonExisting",
 			},
 		},
 		expectedList: []list.Item{},
@@ -160,64 +160,64 @@ func TestIgnorePattern(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search",
-					"testdata/search/dir",
+					"testdata",
+					"testdata/dir",
 				},
 				IgnoreHidden: true,
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "search",
-					Path:        "testdata/search",
+					SessionName: "testdata",
+					Path:        "testdata",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "testdata/search/dir",
+					Path:        "testdata/dir",
 				},
 				Item{
 					SessionName: "001-hello",
-					Path:        "testdata/search/dir/001-hello",
+					Path:        "testdata/dir/001-hello",
 				},
 				Item{
 					SessionName: "002-world",
-					Path:        "testdata/search/dir/002-world",
+					Path:        "testdata/dir/002-world",
 				},
 				Item{
 					SessionName: "003-go",
-					Path:        "testdata/search/dir/003-go",
+					Path:        "testdata/dir/003-go",
 				},
 			},
 		},
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/search",
-					"testdata/search/dir",
-					"testdata/search/.hiddenDir",
+					"testdata",
+					"testdata/dir",
+					"testdata/.hiddenDir",
 				},
 				IgnoreHidden:  true,
 				IgnorePattern: "hello|world|002",
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "search",
-					Path:        "testdata/search",
+					SessionName: "testdata",
+					Path:        "testdata",
 				},
 				Item{
 					SessionName: "dir",
-					Path:        "testdata/search/dir",
+					Path:        "testdata/dir",
 				},
 				Item{
 					SessionName: "003-go",
-					Path:        "testdata/search/dir/003-go",
+					Path:        "testdata/dir/003-go",
 				},
 				Item{
 					SessionName: "_hiddenDir",
-					Path:        "testdata/search/.hiddenDir",
+					Path:        "testdata/.hiddenDir",
 				},
 				Item{
 					SessionName: "003-three",
-					Path:        "testdata/search/.hiddenDir/003-three",
+					Path:        "testdata/.hiddenDir/003-three",
 				},
 			},
 		},
