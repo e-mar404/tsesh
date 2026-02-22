@@ -16,12 +16,11 @@ type Search struct {
 	Paths         []string `toml:"search_paths"`
 	IgnorePattern string   `toml:"ignore_pattern"`
 	IgnoreHidden  bool     `toml:"ignore_hidden"`
-	MaxDepth      int      `toml:"max_depth"`
 }
 
 func Exists() bool {
-	home, _ := os.UserHomeDir()
-	configPath := filepath.Join(home, ".config", "tsesh", "config.toml")
+	configDir, _ := os.UserConfigDir()
+	configPath := filepath.Join(configDir, "tsesh", "config.toml")
 
 	_, err := os.Stat(configPath)
 	if err == nil {
@@ -38,9 +37,8 @@ func CreateDefault() error {
 				"~",
 				"~/projects",
 			},
-			IgnorePattern: "^(\\.git|node_modules|dist|build)$",
+			IgnorePattern: "![^()$]",
 			IgnoreHidden:  true,
-			MaxDepth:      1,
 		},
 	}
 
@@ -50,8 +48,8 @@ func CreateDefault() error {
 		return err
 	}
 
-	home, _ := os.UserHomeDir()
-	configDirPath := filepath.Join(home, ".config", "tsesh")
+	configDir, _ := os.UserConfigDir()
+	configDirPath := filepath.Join(configDir, "tsesh")
 
 	os.MkdirAll(configDirPath, os.ModePerm)
 	return os.WriteFile(
@@ -62,8 +60,8 @@ func CreateDefault() error {
 }
 
 func LoadInto(cfg *Config) error {
-	home, _ := os.UserHomeDir()
-	configPath := filepath.Join(home, ".config", "tsesh", "config.toml")
+	configDir, _ := os.UserConfigDir()
+	configPath := filepath.Join(configDir, "tsesh", "config.toml")
 
 	f, err := os.Open(configPath)
 	if err != nil {

@@ -23,21 +23,41 @@ now the flake is only for development.
 
 ## Configuration
 
-This is were the information for the configuration file will go, there is not a
-set api yet but for now it will default to the following search paths:
-
-- `~/`
-- `~/project` 
-
 Originally I was thinking of using lua for the configuration file but I do not
-need the functionality right now so I will do that later and will start building
+need all that functionality right now so I will do that later and will start building
 with a toml file.
+
+As of right now the file `.example.config.toml` contains the default
+configuration. If there is not already a `config.toml` file under the directory
+`$XDG_CONFIR_DIR/tsesh` or `$HOME/.config/tsesh` a new default config will be 
+created. The place depends on which ENV vars are set.
+
+**Note**: Config uses `os.UserConfigDir()` so look at the function 
+implementation for differences between UNIX/windows and how it determines which
+directory it chooses.
+
+### Conflicts between search paths and ignore patterns
+
+It is possible that a directory put on the search path gets picked up by either
+`ignore_pattern` and/or `ignore_hidden`. For such cases there is a preliminary
+check to still expand that path if it is explicitly on the search path list.
+
+For example, if your config looks like this:
+
+```toml
+[search]
+paths = ['~/.config']
+ignore_hidden = true
+```
+
+The directory `~/.config` will still be expanded even though it should've been
+picked up by the `ignore_hidden` rule. However if there are more hidden
+directories under that path those directories are expected to be ignored.
 
 ## Data storage
 
-Bookmarks will be saved in `$XDG_DATA_HOME/tsesh/data.json`. Later the data dir
-will be able to be changed but for now this is the planned place where it will
-go.
+Bookmarks will be saved in `.../tsesh/data.json`. Later the data dir
+will be able to be changed but for now this is static.
 
 ## TODO 
 
@@ -45,7 +65,7 @@ go.
 
 - testing
     - [x] tmux (since I found a cool new way to test exec.Command)
-    - [ ] find.go (have to make sure the file name is okay and returns proper
+    - [ ] search.go (have to make sure the file name is okay and returns proper
       session names)
     - [ ] bubbletea program?
 
@@ -54,8 +74,8 @@ go.
     - [ ] check gofmt
 
 - config file
-    - [ ] check for config file existence
-    - [ ] load config at startup
+    - [x] check for config file existence
+    - [x] load config at startup
 
 - data file
     - [ ] decide on file path

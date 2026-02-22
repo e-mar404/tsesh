@@ -28,7 +28,7 @@ func searchPaths(cfg config.Search) []list.Item {
 		expandedRoot := expandPath(root)
 		filepath.WalkDir(expandedRoot, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
-				fmt.Printf("error while walking dir: %v\n", err)
+				fmt.Fprintf(os.Stderr, "error while walking dir: %v\n", err)
 				return err
 			}
 
@@ -37,13 +37,25 @@ func searchPaths(cfg config.Search) []list.Item {
 			}
 
 			sessionName := d.Name()
-			match, err := regexp.MatchString(cfg.IgnorePattern, sessionName)
-			if match {
-				return filepath.SkipDir
-			}
+			// paths that are explicitly on the search path list always get searched
+			if path != expandedRoot {
+				pattern := cfg.IgnorePattern
+				if cfg.IgnorePattern == "" {
+					pattern = "![*]"
+				}
 
-			if strings.HasPrefix(sessionName, ".") && cfg.IgnoreHidden {
-				return filepath.SkipDir
+				match, err := regexp.MatchString(pattern, sessionName)
+				if err != nil {
+					return err
+				}
+
+				if match {
+					return filepath.SkipDir
+				}
+
+				if strings.HasPrefix(sessionName, ".") && cfg.IgnoreHidden {
+					return filepath.SkipDir
+				}
 			}
 
 			if strings.Contains(d.Name(), ".") {
@@ -59,7 +71,7 @@ func searchPaths(cfg config.Search) []list.Item {
 				m[sessionName] = item
 			}
 
-			// Needs to be after directory has been added to keep the search to a max depth of 1
+			// placing check after maintains desired max depth of 1 behavior
 			if d.IsDir() && path != expandedRoot {
 				return filepath.SkipDir
 			}
