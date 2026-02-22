@@ -23,7 +23,6 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-      working-directory: ./tsesh
 
     - name: Format Check
       run: if [ `gofmt -l . | wc -l` -gt 0` ]; then echo "failed gofmt" exit 1; fi
