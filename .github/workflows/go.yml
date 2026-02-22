@@ -25,4 +25,4 @@ jobs:
       run: go test -v ./...
 
     - name: Format Check
-      run: if [ `gofmt -l . | wc -l` -gt 0` ]; then echo "failed gofmt" exit 1; fi
+      run: if [ `gofmt -l . | wc -l` -gt 0 ]; then echo "failed gofmt" exit 1; fi
