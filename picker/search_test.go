@@ -25,14 +25,14 @@ func TestSessionName(t *testing.T) {
 		{
 			cfg: config.Search{
 				Paths: []string{
-					"testdata/.emptyHiddenDir",
+					"testdata/.hiddenDir",
 				},
-				IgnoreHidden: false,
+				IgnorePattern: "*",
 			},
 			expectedList: []list.Item{
 				Item{
-					SessionName: "_emptyHiddenDir",
-					Path:        "testdata/.emptyHiddenDir",
+					SessionName: "_hiddenDir",
+					Path:        "testdata/.hiddenDir",
 				},
 			},
 		},
@@ -110,10 +110,6 @@ func TestHiddenDirs(t *testing.T) {
 				Item{
 					SessionName: "testdata",
 					Path:        "testdata",
-				},
-				Item{
-					SessionName: "_emptyHiddenDir",
-					Path:        "testdata/.emptyHiddenDir",
 				},
 				Item{
 					SessionName: "_hiddenDir",
