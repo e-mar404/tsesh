@@ -3,32 +3,40 @@ package bookmark
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"net/url"
 	"os"
 
 	"github.com/adrg/xdg"
 )
 
-type Entries struct {
-	Data []Entry `json:"entries"`
+var InvalidUrlScheme = errors.New("Invalid URL scheme provided")
+
+type Data map[string][]Bookmark
+
+type Bookmark struct {
+	Url string `json:"url"`
 }
 
-type Entry struct {
-	Url       string `json:"url"`
-	Directory string `json:"directory"`
-}
-
-func (e *Entries) Add(urls ...string) error {
+func (d Data) Add(urls ...string) error {
 	cwd, _ := os.Getwd()
-	for _, url := range urls {
-		e.Data = append(e.Data, Entry{
-			Url:       url,
-			Directory: cwd,
+	for _, rawUrl := range urls {
+		if err := validate(rawUrl); err != nil {
+			return err
+		}
+
+		if has(d[cwd], rawUrl) {
+			continue
+		}
+
+		d[cwd] = append(d[cwd], Bookmark{
+			Url: rawUrl,
 		})
 	}
-	return e.save()
+	return d.save()
 }
 
-func (e *Entries) Load() error {
+func (d *Data) Load() error {
 	path, err := xdg.DataFile("tsesh/data.json")
 	if err != nil {
 		return err
@@ -40,19 +48,19 @@ func (e *Entries) Load() error {
 	}
 
 	decoder := json.NewDecoder(f)
-	err = decoder.Decode(e)
+	err = decoder.Decode(d)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (e *Entries) save() error {
+func (d *Data) save() error {
 	buf := bytes.NewBuffer([]byte{})
 	encoder := json.NewEncoder(buf)
 	encoder.SetIndent("", "  ")
 
-	if err := encoder.Encode(e); err != nil {
+	if err := encoder.Encode(d); err != nil {
 		return err
 	}
 
@@ -75,6 +83,28 @@ func ValidateDataStorage() error {
 		return nil
 	}
 
-	e := &Entries{}
+	e := &Data{}
 	return e.save()
+}
+
+func validate(rawUrl string) error {
+	u, err := url.Parse(rawUrl)
+	if err != nil {
+		return err
+	}
+
+	if u.Scheme == "" {
+		return InvalidUrlScheme
+	}
+
+	return nil
+}
+
+func has(bookmarks []Bookmark, rawUrl string) bool {
+	for _, bookmark := range bookmarks {
+		if bookmark.Url == rawUrl {
+			return true
+		}
+	}
+	return false
 }

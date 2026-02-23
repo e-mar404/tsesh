@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	data   = &bookmark.Entries{}
+	data   = make(bookmark.Data)
 	addCmd = &cobra.Command{
 		Use:   "add",
 		Short: "add a directory or a url to the current working directory",
