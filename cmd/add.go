@@ -23,10 +23,8 @@ var (
 				os.Exit(1)
 			}
 
-			cwd, _ := os.Getwd()
-			for _, arg := range args {
-				fmt.Printf("adding url: %v to %v\n", arg, cwd)
-			}
+			err := data.Add(args...)
+			cobra.CheckErr(err)
 		},
 	}
 )
