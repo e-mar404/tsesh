@@ -46,3 +46,14 @@ func loadConfig() {
 	err := config.LoadInto(cfg)
 	cobra.CheckErr(err)
 }
+
+func batch(checks ...func() error) func(*cobra.Command, []string) error {
+	return func(_ *cobra.Command, _ []string) error {
+		for _, check := range checks {
+			if err := check(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}

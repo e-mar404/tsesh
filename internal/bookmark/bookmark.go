@@ -3,7 +3,6 @@ package bookmark
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/adrg/xdg"
@@ -14,27 +13,45 @@ type Entries struct {
 }
 
 type Entry struct {
-	Url       string   `json:"url"`
-	Directory string   `json:"directory"`
+	Url       string `json:"url"`
+	Directory string `json:"directory"`
 }
 
-func (e Entries) Add(urls... string) error {
+func (e *Entries) Add(urls ...string) error {
 	cwd, _ := os.Getwd()
 	for _, url := range urls {
 		e.Data = append(e.Data, Entry{
-			Url: url,
+			Url:       url,
 			Directory: cwd,
 		})
 	}
-
 	return e.save()
 }
 
-func (e Entries) save() error {
+func (e *Entries) Load() error {
+	path, err := xdg.DataFile("tsesh/data.json")
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Open(path)
+	if !os.IsNotExist(err) && err != nil {
+		return err
+	}
+
+	decoder := json.NewDecoder(f)
+	err = decoder.Decode(e)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *Entries) save() error {
 	buf := bytes.NewBuffer([]byte{})
 	encoder := json.NewEncoder(buf)
 	encoder.SetIndent("", "  ")
-	
+
 	if err := encoder.Encode(e); err != nil {
 		return err
 	}
@@ -44,7 +61,20 @@ func (e Entries) save() error {
 		return err
 	}
 
-	fmt.Printf("writing: %v\n to file: %v\n", buf.String(), path)
-
 	return os.WriteFile(path, buf.Bytes(), os.ModePerm)
+}
+
+func ValidateDataStorage() error {
+	path, err := xdg.DataFile("tsesh/data.json")
+	if err != nil {
+		return err
+	}
+
+	_, err = os.Stat(path)
+	if !os.IsNotExist(err) {
+		return nil
+	}
+
+	e := &Entries{}
+	return e.save()
 }
