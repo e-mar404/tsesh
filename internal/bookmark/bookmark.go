@@ -19,7 +19,11 @@ type Bookmark struct {
 }
 
 func (d Data) Add(urls ...string) error {
-	cwd, _ := os.Getwd()
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
 	for _, rawUrl := range urls {
 		if err := validate(rawUrl); err != nil {
 			return err
@@ -33,7 +37,7 @@ func (d Data) Add(urls ...string) error {
 			Url: rawUrl,
 		})
 	}
-	return d.save()
+	return nil
 }
 
 func (d *Data) Load() error {

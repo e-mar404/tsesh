@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/e-mar404/tsesh/config"
+	"github.com/e-mar404/tsesh/internal/config"
 )
 
 type searchTest struct {
