@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/e-mar404/tsesh/internal/bookmark"
 	"github.com/e-mar404/tsesh/internal/config"
 	"github.com/e-mar404/tsesh/internal/picker"
 	"github.com/spf13/cobra"
@@ -12,6 +13,7 @@ import (
 
 var (
 	cfg     = &config.Config{}
+	data    = make(bookmark.Data)
 	rootCmd = &cobra.Command{
 		Use:   "tsesh",
 		Short: "terminal sessionizer extending tmux",
@@ -35,6 +37,7 @@ func init() {
 	cobra.OnInitialize(loadConfig)
 
 	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(rmCmd)
 }
 
 func loadConfig() {

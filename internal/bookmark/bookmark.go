@@ -6,11 +6,13 @@ import (
 	"errors"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/adrg/xdg"
 )
 
 var InvalidUrlScheme = errors.New("Invalid URL scheme provided")
+var EmptyData = errors.New("Data has no saved info, add something before removing")
 
 type Data map[string][]Bookmark
 
@@ -37,6 +39,23 @@ func (d Data) Add(urls ...string) error {
 			Url: rawUrl,
 		})
 	}
+	return nil
+}
+
+func (d Data) Remove(partial string) error {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	var newData []Bookmark
+	for _, bookmark := range d[cwd] {
+		if !strings.Contains(bookmark.Url, partial) {
+			newData = append(newData, bookmark)
+		}
+	}
+	d[cwd] = newData
+
 	return nil
 }
 

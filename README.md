@@ -78,11 +78,14 @@ will be able to be changed but for now this is static.
     - [x] load config at startup
 
 - data file
-    - [ ] decide on file path
+    - [x] decide on file path
     - [ ] allow user to override datadir
 
 - tsesh cmd
-    - [ ] `add [path|url]` adds the current path to bookmarks
+    - [x] `add [url]` adds the url bookmark to the current path
+    - [x] `rm [partial url]` can be any part of the url, will use
+      strings.Contains on all urls associated with current directory so can rm
+      more than one at a time
     - [ ] `bookmarks` will display saved bookmarks
     - [ ] `open [string|int]` open specified bookmark
 
