@@ -59,6 +59,15 @@ func (d Data) Remove(partial string) error {
 	return nil
 }
 
+func (d Data) List() ([]Bookmark, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	return d[cwd], nil
+}
+
 func (d *Data) Load() error {
 	path, err := xdg.DataFile("tsesh/data.json")
 	if err != nil {

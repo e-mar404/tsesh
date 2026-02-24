@@ -38,6 +38,7 @@ func init() {
 
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(rmCmd)
+	rootCmd.AddCommand(listCmd)
 }
 
 func loadConfig() {
