@@ -21,8 +21,11 @@ jobs:
       with:
         go-version: '1.26'
 
+    - name: Prep scripts
+      run: chmod +x *.sh
+
     - name: Test
-      run: go test -v ./...
+      run: ./test.sh
 
     - name: Format Check
-      run: if [ `gofmt -l . | wc -l` -gt 0 ]; then echo "failed gofmt" exit 1; fi
+      run: ./format.sh

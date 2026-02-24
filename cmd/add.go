@@ -25,6 +25,9 @@ var (
 
 			err := data.Add(args...)
 			cobra.CheckErr(err)
+
+			err = data.Save()
+			cobra.CheckErr(err)
 		},
 	}
 )

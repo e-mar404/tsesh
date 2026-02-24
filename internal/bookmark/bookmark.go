@@ -59,7 +59,7 @@ func (d *Data) Load() error {
 	return nil
 }
 
-func (d *Data) save() error {
+func (d *Data) Save() error {
 	buf := bytes.NewBuffer([]byte{})
 	encoder := json.NewEncoder(buf)
 	encoder.SetIndent("", "  ")
@@ -88,7 +88,7 @@ func ValidateDataStorage() error {
 	}
 
 	e := &Data{}
-	return e.save()
+	return e.Save()
 }
 
 func validate(rawUrl string) error {
