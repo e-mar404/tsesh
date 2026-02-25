@@ -86,8 +86,8 @@ will be able to be changed but for now this is static.
     - [x] `rm [partial url]` can be any part of the url, will use
       strings.Contains on all urls associated with current directory so can rm
       more than one at a time
-    - [ ] `list` will display saved bookmarks for current dir
-    - [ ] `open [string|int]` open specified bookmark
+    - [x] `list` will display saved bookmarks for current dir
+    - [x] `open [int]` open specified bookmark
 
 ### Stage 2
 

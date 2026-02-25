@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/url"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 
 	"github.com/adrg/xdg"
@@ -13,6 +15,7 @@ import (
 
 var InvalidUrlScheme = errors.New("Invalid URL scheme provided")
 var EmptyData = errors.New("Data has no saved info, add something before removing")
+var OutofBounds = errors.New("Index given is out of bounds for current bookmark list")
 
 type Data map[string][]Bookmark
 
@@ -85,6 +88,33 @@ func (d *Data) Load() error {
 		return err
 	}
 	return nil
+}
+
+func (d Data) Open(idx int) error {
+	list, err := d.List()
+	if err != nil {
+		return err
+	}
+
+	if idx > len(list)-1 {
+		return OutofBounds
+	}
+
+	var cmd string
+	var args []string
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start", list[idx].Url}
+	case "darwin":
+		cmd = "open"
+		args = []string{list[idx].Url}
+	default:
+		cmd = "xdg-open"
+		args = []string{list[idx].Url}
+	}
+
+	return exec.Command(cmd, args...).Run()
 }
 
 func (d *Data) Save() error {

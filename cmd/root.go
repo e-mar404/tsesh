@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/e-mar404/tsesh/internal/bookmark"
@@ -17,20 +16,19 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "tsesh",
 		Short: "terminal sessionizer extending tmux",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			p := tea.NewProgram(picker.New(cfg), tea.WithAltScreen())
 			if pi, err := p.Run(); err != nil {
 				fmt.Printf("%v\n", pi.(picker.Picker).Err)
-				fmt.Printf("Encountered an error when trying to run the directory picker: %v\n", err)
-				os.Exit(1)
+				return fmt.Errorf("Encountered an error when trying to run the directory picker: %v\n", err)
 			}
+			return nil
 		},
 	}
 )
 
 func Execute() {
-	err := rootCmd.Execute()
-	cobra.CheckErr(err)
+	rootCmd.Execute()
 }
 
 func init() {
@@ -39,6 +37,7 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(openCmd)
 }
 
 func loadConfig() {
