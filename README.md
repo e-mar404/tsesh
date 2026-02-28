@@ -65,6 +65,9 @@ bookmarks attached to directories.
 These are the available commands:
 
 ```
+terminal sessionizer extending tmux
+
+Usage:
   tsesh [flags]
   tsesh [command]
 
@@ -74,7 +77,10 @@ Available Commands:
   help        Help about any command
   list        list all bookmarks set for current directory
   open        open a bookmark by index
+  pin         pins the current directory to the top of the list when running tsesh
   rm          remove url provided from bookmark list for current working directory
+  unpin       unpin directory from fuzzy finder if it is in the pinned list
+  version     get tsesh cli version
 
 Flags:
   -h, --help   help for tsesh
