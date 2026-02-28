@@ -14,6 +14,7 @@ type Config struct {
 
 type Search struct {
 	Paths         []string `toml:"search_paths"`
+	Pinned        []string `toml:"pinned_paths"`
 	IgnorePattern string   `toml:"ignore_pattern"`
 	IgnoreHidden  bool     `toml:"ignore_hidden"`
 }
@@ -41,7 +42,24 @@ func CreateDefault() error {
 			IgnoreHidden:  true,
 		},
 	}
+	return cfg.Save()
+}
 
+func LoadInto(cfg *Config) error {
+	configDir, _ := os.UserConfigDir()
+	configPath := filepath.Join(configDir, "tsesh", "config.toml")
+
+	f, err := os.Open(configPath)
+	if err != nil {
+		return err
+	}
+
+	decoder := toml.NewDecoder(f)
+
+	return decoder.Decode(cfg)
+}
+
+func (cfg *Config) Save() error {
 	buf := bytes.NewBuffer([]byte{})
 	encoder := toml.NewEncoder(buf)
 	if err := encoder.Encode(cfg); err != nil {
@@ -59,16 +77,7 @@ func CreateDefault() error {
 	)
 }
 
-func LoadInto(cfg *Config) error {
-	configDir, _ := os.UserConfigDir()
-	configPath := filepath.Join(configDir, "tsesh", "config.toml")
-
-	f, err := os.Open(configPath)
-	if err != nil {
-		return err
-	}
-
-	decoder := toml.NewDecoder(f)
-
-	return decoder.Decode(cfg)
+func (cfg *Config) Pin(dir string) error {
+	cfg.Search.Pinned = append(cfg.Search.Pinned, dir)
+	return cfg.Save()
 }

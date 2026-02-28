@@ -20,10 +20,20 @@ func expandPath(path string) string {
 	}
 	return expanded
 }
+func pinnedPaths(cfg config.Search) []list.Item {
+	list := []list.Item{}
+	for _, path := range cfg.Pinned {
+		list = append(list, Item{
+			SessionName: filepath.Base(path),
+			Path:        path,
+		})
+	}
+	return list
+}
 
 func searchPaths(cfg config.Search) []list.Item {
 	m := make(map[string]Item)
-	dirList := []list.Item{}
+	list := []list.Item{}
 	for _, root := range cfg.Paths {
 		expandedRoot := expandPath(root)
 		filepath.WalkDir(expandedRoot, func(path string, d fs.DirEntry, err error) error {
@@ -67,7 +77,7 @@ func searchPaths(cfg config.Search) []list.Item {
 					SessionName: sessionName,
 					Path:        path,
 				}
-				dirList = append(dirList, item)
+				list = append(list, item)
 				m[sessionName] = item
 			}
 
@@ -79,5 +89,5 @@ func searchPaths(cfg config.Search) []list.Item {
 			return nil
 		})
 	}
-	return dirList
+	return list
 }

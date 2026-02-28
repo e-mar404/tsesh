@@ -85,9 +85,14 @@ func (p Picker) View() string {
 }
 
 func New(cfg *config.Config) Picker {
+	content := []list.Item{}
+
+	content = append(content, pinnedPaths(cfg.Search)...)
+	content = append(content, searchPaths(cfg.Search)...)
+
 	return Picker{
 		List: list.New(
-			searchPaths(cfg.Search),
+			content,
 			list.NewDefaultDelegate(),
 			0,
 			0,
