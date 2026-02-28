@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	version string
 	cfg     = &config.Config{}
 	data    = make(bookmark.Data)
 	rootCmd = &cobra.Command{
@@ -27,7 +28,8 @@ var (
 	}
 )
 
-func Execute() {
+func Execute(currentVersion string) {
+	version = currentVersion
 	rootCmd.Execute()
 }
 
@@ -38,6 +40,7 @@ func init() {
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(openCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
 func loadConfig() {
