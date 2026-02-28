@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/pelletier/go-toml/v2"
 )
@@ -14,6 +15,7 @@ type Config struct {
 
 type Search struct {
 	Paths         []string `toml:"search_paths"`
+	Pinned        []string `toml:"pinned_paths"`
 	IgnorePattern string   `toml:"ignore_pattern"`
 	IgnoreHidden  bool     `toml:"ignore_hidden"`
 }
@@ -41,7 +43,24 @@ func CreateDefault() error {
 			IgnoreHidden:  true,
 		},
 	}
+	return cfg.Save()
+}
 
+func LoadInto(cfg *Config) error {
+	configDir, _ := os.UserConfigDir()
+	configPath := filepath.Join(configDir, "tsesh", "config.toml")
+
+	f, err := os.Open(configPath)
+	if err != nil {
+		return err
+	}
+
+	decoder := toml.NewDecoder(f)
+
+	return decoder.Decode(cfg)
+}
+
+func (cfg *Config) Save() error {
 	buf := bytes.NewBuffer([]byte{})
 	encoder := toml.NewEncoder(buf)
 	if err := encoder.Encode(cfg); err != nil {
@@ -59,16 +78,21 @@ func CreateDefault() error {
 	)
 }
 
-func LoadInto(cfg *Config) error {
-	configDir, _ := os.UserConfigDir()
-	configPath := filepath.Join(configDir, "tsesh", "config.toml")
-
-	f, err := os.Open(configPath)
-	if err != nil {
-		return err
+func (cfg *Config) Pin(dir string) error {
+	if slices.Contains(cfg.Search.Pinned, dir) {
+		return nil
 	}
+	cfg.Search.Pinned = append(cfg.Search.Pinned, dir)
+	return cfg.Save()
+}
 
-	decoder := toml.NewDecoder(f)
-
-	return decoder.Decode(cfg)
+func (cfg *Config) Unpin(dir string) error {
+	newPinnedList := []string{}
+	for _, path := range cfg.Search.Pinned {
+		if dir != path {
+			newPinnedList = append(newPinnedList, path)
+		}
+	}
+	cfg.Search.Pinned = newPinnedList
+	return cfg.Save()
 }

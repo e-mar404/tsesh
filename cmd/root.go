@@ -41,6 +41,8 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(openCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(pinCmd)
+	rootCmd.AddCommand(unpinCmd)
 }
 
 func loadConfig() {
