@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/pelletier/go-toml/v2"
 )
@@ -78,6 +79,20 @@ func (cfg *Config) Save() error {
 }
 
 func (cfg *Config) Pin(dir string) error {
+	if slices.Contains(cfg.Search.Pinned, dir) {
+		return nil
+	}
 	cfg.Search.Pinned = append(cfg.Search.Pinned, dir)
+	return cfg.Save()
+}
+
+func (cfg *Config) Unpin(dir string) error {
+	newPinnedList := []string{}
+	for _, path := range cfg.Search.Pinned {
+		if dir != path {
+			newPinnedList = append(newPinnedList, path)
+		}
+	}
+	cfg.Search.Pinned = newPinnedList
 	return cfg.Save()
 }
