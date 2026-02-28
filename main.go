@@ -1,7 +1,15 @@
 package main
 
-import "github.com/e-mar404/tsesh/cmd"
+import (
+	_ "embed"
+	"strings"
+
+	"github.com/e-mar404/tsesh/cmd"
+)
+
+//go:embed version.txt
+var version string
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(strings.TrimSpace(version))
 }
