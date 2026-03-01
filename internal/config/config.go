@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"slices"
 
+	"github.com/charmbracelet/log"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -43,12 +44,14 @@ func CreateDefault() error {
 			IgnoreHidden:  true,
 		},
 	}
+	log.Info("creating default config file")
 	return cfg.Save()
 }
 
 func LoadInto(cfg *Config) error {
 	configDir, _ := os.UserConfigDir()
 	configPath := filepath.Join(configDir, "tsesh", "config.toml")
+	log.Debug("loading config", "path", configPath)
 
 	f, err := os.Open(configPath)
 	if err != nil {
@@ -69,6 +72,7 @@ func (cfg *Config) Save() error {
 
 	configDir, _ := os.UserConfigDir()
 	configDirPath := filepath.Join(configDir, "tsesh")
+	log.Info("saving config", "path", configDir)
 
 	os.MkdirAll(configDirPath, os.ModePerm)
 	return os.WriteFile(
@@ -80,13 +84,18 @@ func (cfg *Config) Save() error {
 
 func (cfg *Config) Pin(dir string) error {
 	if slices.Contains(cfg.Search.Pinned, dir) {
+		log.Info("directory is already pinned")
 		return nil
 	}
+
 	cfg.Search.Pinned = append(cfg.Search.Pinned, dir)
+	log.Info("added directory to pinned list", "dir", dir)
+
 	return cfg.Save()
 }
 
 func (cfg *Config) Unpin(dir string) error {
+	log.Info("removing current directory", "dir", dir)
 	newPinnedList := []string{}
 	for _, path := range cfg.Search.Pinned {
 		if dir != path {
@@ -94,5 +103,6 @@ func (cfg *Config) Unpin(dir string) error {
 		}
 	}
 	cfg.Search.Pinned = newPinnedList
+	log.Debug("new pinned list", "list", cfg.Search.Pinned)
 	return cfg.Save()
 }

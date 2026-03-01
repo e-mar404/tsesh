@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/log"
 	"github.com/e-mar404/tsesh/internal/bookmark"
 	"github.com/e-mar404/tsesh/internal/config"
 	"github.com/e-mar404/tsesh/internal/picker"
@@ -12,6 +13,7 @@ import (
 
 var (
 	version string
+	verbose bool
 	cfg     = &config.Config{}
 	data    = make(bookmark.Data)
 	rootCmd = &cobra.Command{
@@ -20,8 +22,8 @@ var (
 		RunE: func(cmd *cobra.Command, args []string) error {
 			p := tea.NewProgram(picker.New(cfg), tea.WithAltScreen())
 			if pi, err := p.Run(); err != nil {
-				fmt.Printf("%v\n", pi.(picker.Picker).Err)
-				return fmt.Errorf("Encountered an error when trying to run the directory picker: %v\n", err)
+				log.Errorf("%v\n", pi.(picker.Picker).Err)
+				os.Exit(1)
 			}
 			return nil
 		},
@@ -34,8 +36,6 @@ func Execute(currentVersion string) {
 }
 
 func init() {
-	cobra.OnInitialize(loadConfig)
-
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(listCmd)
@@ -43,6 +43,13 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(pinCmd)
 	rootCmd.AddCommand(unpinCmd)
+
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "show debug logging")
+
+	cobra.OnInitialize(
+		setLogLevel,
+		loadConfig,
+	)
 }
 
 func loadConfig() {
@@ -64,4 +71,14 @@ func batch(checks ...func() error) func(*cobra.Command, []string) error {
 		}
 		return nil
 	}
+}
+
+func setLogLevel() {
+	level := log.Level(0)
+	if verbose {
+		level = log.Level(-4)
+	}
+	log.SetLevel(level)
+	log.SetOutput(os.Stderr)
+	log.SetReportTimestamp(false)
 }
