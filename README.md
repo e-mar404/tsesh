@@ -15,7 +15,7 @@ This project is not ready for production use yet but should still be able to
 build and run. You can try it out with the following cmd:
 
 ```bash
-go install github.com/e-mar404/tsesh@v0.1.0
+go install github.com/e-mar404/tsesh@v0.1.1
 ```
 
 In the future it will also be available through nixpkgs/as a nix flake. Right
@@ -83,7 +83,8 @@ Available Commands:
   version     get tsesh cli version
 
 Flags:
-  -h, --help   help for tsesh
+  -h, --help      help for tsesh
+  -v, --verbose   show debug logging
 
 Use "tsesh [command] --help" for more information about a command.
 ```
