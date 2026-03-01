@@ -95,6 +95,7 @@ func (cfg *Config) Pin(dir string) error {
 }
 
 func (cfg *Config) Unpin(dir string) error {
+	log.Info("removing current directory", "dir", dir)
 	newPinnedList := []string{}
 	for _, path := range cfg.Search.Pinned {
 		if dir != path {
@@ -102,5 +103,6 @@ func (cfg *Config) Unpin(dir string) error {
 		}
 	}
 	cfg.Search.Pinned = newPinnedList
+	log.Debug("new pinned list", "list", cfg.Search.Pinned)
 	return cfg.Save()
 }
