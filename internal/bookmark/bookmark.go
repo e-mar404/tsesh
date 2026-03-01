@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/adrg/xdg"
+	"github.com/charmbracelet/log"
 )
 
 var InvalidUrlScheme = errors.New("Invalid URL scheme provided")
@@ -28,6 +29,7 @@ func (d Data) Add(urls ...string) error {
 	if err != nil {
 		return err
 	}
+	log.Debugf("using directory: %v", cwd)
 
 	for _, rawUrl := range urls {
 		if err := validate(rawUrl); err != nil {
@@ -35,12 +37,14 @@ func (d Data) Add(urls ...string) error {
 		}
 
 		if has(d[cwd], rawUrl) {
+			log.Infof("ignoring %s, duplicate url in list", rawUrl)
 			continue
 		}
 
 		d[cwd] = append(d[cwd], Bookmark{
 			Url: rawUrl,
 		})
+		log.Infof("added %s to bookmark list", rawUrl)
 	}
 	return nil
 }
@@ -130,6 +134,7 @@ func (d *Data) Save() error {
 	if err != nil {
 		return err
 	}
+	log.Debugf("using file at %s as a data file", path)
 
 	return os.WriteFile(path, buf.Bytes(), os.ModePerm)
 }
