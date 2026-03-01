@@ -17,8 +17,8 @@ var (
 	cfg     = &config.Config{}
 	data    = make(bookmark.Data)
 	rootCmd = &cobra.Command{
-		Use:              "tsesh",
-		Short:            "terminal sessionizer extending tmux",
+		Use:   "tsesh",
+		Short: "terminal sessionizer extending tmux",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			p := tea.NewProgram(picker.New(cfg), tea.WithAltScreen())
 			if pi, err := p.Run(); err != nil {
