@@ -19,7 +19,6 @@ var (
 	rootCmd = &cobra.Command{
 		Use:              "tsesh",
 		Short:            "terminal sessionizer extending tmux",
-		PersistentPreRun: setLogLevel,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			p := tea.NewProgram(picker.New(cfg), tea.WithAltScreen())
 			if pi, err := p.Run(); err != nil {
@@ -37,8 +36,6 @@ func Execute(currentVersion string) {
 }
 
 func init() {
-	cobra.OnInitialize(loadConfig)
-
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(listCmd)
@@ -48,6 +45,11 @@ func init() {
 	rootCmd.AddCommand(unpinCmd)
 
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "show debug logging")
+
+	cobra.OnInitialize(
+		setLogLevel,
+		loadConfig,
+	)
 }
 
 func loadConfig() {
@@ -71,10 +73,9 @@ func batch(checks ...func() error) func(*cobra.Command, []string) error {
 	}
 }
 
-func setLogLevel(_ *cobra.Command, _ []string) {
+func setLogLevel() {
 	level := log.Level(0)
 	if verbose {
-		log.Info("verbose flag set")
 		level = log.Level(-4)
 	}
 	log.SetLevel(level)

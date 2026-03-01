@@ -44,12 +44,14 @@ func CreateDefault() error {
 			IgnoreHidden:  true,
 		},
 	}
+	log.Info("creating default config file")
 	return cfg.Save()
 }
 
 func LoadInto(cfg *Config) error {
 	configDir, _ := os.UserConfigDir()
 	configPath := filepath.Join(configDir, "tsesh", "config.toml")
+	log.Debug("loading config", "path", configPath)
 
 	f, err := os.Open(configPath)
 	if err != nil {
@@ -70,6 +72,7 @@ func (cfg *Config) Save() error {
 
 	configDir, _ := os.UserConfigDir()
 	configDirPath := filepath.Join(configDir, "tsesh")
+	log.Info("saving config", "path", configDir)
 
 	os.MkdirAll(configDirPath, os.ModePerm)
 	return os.WriteFile(
