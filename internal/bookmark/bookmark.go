@@ -29,7 +29,7 @@ func (d Data) Add(urls ...string) error {
 	if err != nil {
 		return err
 	}
-	log.Debugf("using directory: %v", cwd)
+	log.Debug("getting directory", "cwd", cwd)
 
 	for _, rawUrl := range urls {
 		if err := validate(rawUrl); err != nil {
@@ -37,14 +37,14 @@ func (d Data) Add(urls ...string) error {
 		}
 
 		if has(d[cwd], rawUrl) {
-			log.Infof("ignoring %s, duplicate url in list", rawUrl)
+			log.Info("duplicate url in list, ignoring", "rawUrl", rawUrl)
 			continue
 		}
 
 		d[cwd] = append(d[cwd], Bookmark{
 			Url: rawUrl,
 		})
-		log.Infof("added %s to bookmark list", rawUrl)
+		log.Info("added to bookmark list", "rawUrl", rawUrl)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ func (d Data) List() ([]Bookmark, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("using cwd: %s", cwd)
+	log.Debug("getting directory", "cwd", cwd)
 
 	return d[cwd], nil
 }
@@ -100,6 +100,7 @@ func (d Data) Open(idx int) error {
 	if err != nil {
 		return err
 	}
+	log.Debug("list from cwd", "bookmarks", list)
 
 	if idx > len(list)-1 {
 		return OutofBounds
@@ -118,6 +119,7 @@ func (d Data) Open(idx int) error {
 		cmd = "xdg-open"
 		args = []string{list[idx].Url}
 	}
+	log.Debug("executing command based on GOOS", "cmd", cmd, "args", args)
 
 	return exec.Command(cmd, args...).Run()
 }
@@ -135,7 +137,7 @@ func (d *Data) Save() error {
 	if err != nil {
 		return err
 	}
-	log.Debugf("using file at %s as a data file", path)
+	log.Debug("got data file", "path", path)
 
 	return os.WriteFile(path, buf.Bytes(), os.ModePerm)
 }
