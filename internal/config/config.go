@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"slices"
 
+	"github.com/charmbracelet/log"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -80,9 +81,13 @@ func (cfg *Config) Save() error {
 
 func (cfg *Config) Pin(dir string) error {
 	if slices.Contains(cfg.Search.Pinned, dir) {
+		log.Info("directory is already pinned")
 		return nil
 	}
+
 	cfg.Search.Pinned = append(cfg.Search.Pinned, dir)
+	log.Info("added directory to pinned list", "dir", dir)
+
 	return cfg.Save()
 }
 
