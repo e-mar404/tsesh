@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/e-mar404/tsesh/internal/bookmark"
 	"github.com/spf13/cobra"
@@ -22,7 +23,7 @@ var (
 			}
 
 			if len(list) == 0 {
-				fmt.Printf("no bookmarks set for this directory\n")
+				log.Print("no bookmarks set for this directory")
 				return nil
 			}
 

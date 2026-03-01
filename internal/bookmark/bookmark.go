@@ -71,6 +71,7 @@ func (d Data) List() ([]Bookmark, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Debugf("using cwd: %s", cwd)
 
 	return d[cwd], nil
 }
