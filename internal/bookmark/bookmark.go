@@ -54,6 +54,7 @@ func (d Data) Remove(partial string) error {
 	if err != nil {
 		return err
 	}
+	log.Debug("getting cwd", "cwd", cwd)
 
 	var newData []Bookmark
 	for _, bookmark := range d[cwd] {
@@ -61,6 +62,7 @@ func (d Data) Remove(partial string) error {
 			newData = append(newData, bookmark)
 		}
 	}
+	log.Debug("new data after removing matching entries", "newData", newData)
 	d[cwd] = newData
 
 	return nil
@@ -106,22 +108,23 @@ func (d Data) Open(idx int) error {
 		return OutofBounds
 	}
 
-	var cmd string
-	var args []string
-	switch runtime.GOOS {
-	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start", list[idx].Url}
-	case "darwin":
-		cmd = "open"
-		args = []string{list[idx].Url}
-	default:
-		cmd = "xdg-open"
-		args = []string{list[idx].Url}
-	}
-	log.Debug("executing command based on GOOS", "cmd", cmd, "args", args)
+	return openUrl(list[idx].Url)
+}
 
-	return exec.Command(cmd, args...).Run()
+func (d Data) OpenAll() error {
+	list, err := d.List()
+	if err != nil {
+		return err
+	}
+	log.Debug("list from cwd", "bookmarks", list)
+
+	for _, item := range list {
+		if err := openUrl(item.Url); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (d *Data) Save() error {
@@ -177,4 +180,23 @@ func has(bookmarks []Bookmark, rawUrl string) bool {
 		}
 	}
 	return false
+}
+
+func openUrl(rawUrl string) error {
+	var cmd string
+	var args []string
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start", rawUrl}
+	case "darwin":
+		cmd = "open"
+		args = []string{rawUrl}
+	default:
+		cmd = "xdg-open"
+		args = []string{rawUrl}
+	}
+	log.Debug("executing command based on GOOS", "cmd", cmd, "args", args)
+
+	return exec.Command(cmd, args...).Run()
 }
