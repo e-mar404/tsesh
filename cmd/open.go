@@ -8,8 +8,6 @@ import (
 
 var (
 	openAll bool
-	name    string
-	id      int
 	openCmd = &cobra.Command{
 		Use:   "open",
 		Short: "open a bookmark by index",

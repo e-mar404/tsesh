@@ -110,7 +110,7 @@ func TestAddRemoveBookmarks(t *testing.T) {
 		for _, action := range tc.actions {
 			switch action.name {
 			case "add":
-				got.Add(action.rawUrl)
+				got.Add("", action.rawUrl)
 			case "remove":
 				got.Remove(action.rawUrl)
 			}

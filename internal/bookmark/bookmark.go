@@ -25,30 +25,33 @@ type Bookmark struct {
 	Url  string `json:"url"`
 }
 
-func (d Data) Add(urls ...string) error {
+func (d Data) Add(name, rawUrl string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 	log.Debug("getting directory", "cwd", cwd)
 
-	for _, rawUrl := range urls {
-		u, err := convertToUrl(rawUrl)
-		if err != nil {
-			return err
-		}
-
-		if has(d[cwd], rawUrl) {
-			log.Info("duplicate url in list, ignoring", "rawUrl", rawUrl)
-			continue
-		}
-
-		d[cwd] = append(d[cwd], Bookmark{
-			Name: u.Hostname(),
-			Url:  rawUrl,
-		})
-		log.Info("added to bookmark list", "name", u.Hostname(), "rawUrl", rawUrl)
+	u, err := convertToUrl(rawUrl)
+	if err != nil {
+		return err
 	}
+
+	if has(d[cwd], rawUrl) {
+		log.Info("duplicate url in list, ignoring", "rawUrl", rawUrl)
+		return nil
+	}
+
+	if name == "" {
+		name = u.Hostname()
+	}
+
+	d[cwd] = append(d[cwd], Bookmark{
+		Name: name,
+		Url:  rawUrl,
+	})
+	log.Info("added to bookmark list", "name", name, "rawUrl", rawUrl)
+
 	return nil
 }
 
