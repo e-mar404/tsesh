@@ -30,7 +30,7 @@ func TestValidateUrl(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		got := validate(tc.rawUrl)
+		_, got := convertToUrl(tc.rawUrl)
 
 		if !errors.Is(got, tc.expected) {
 			fmt.Printf("expected: %v, got: %v\n", tc.expected, got)
@@ -50,7 +50,8 @@ func TestAddRemoveBookmarks(t *testing.T) {
 			},
 			expctedUrls: []Bookmark{
 				{
-					Url: "https://google.com",
+					Name: "google.com",
+					Url:  "https://google.com",
 				},
 			},
 		},
@@ -97,7 +98,8 @@ func TestAddRemoveBookmarks(t *testing.T) {
 			},
 			expctedUrls: []Bookmark{
 				{
-					Url: "https://github.com",
+					Name: "github.com",
+					Url:  "https://github.com",
 				},
 			},
 		},

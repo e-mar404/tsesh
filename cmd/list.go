@@ -28,7 +28,7 @@ var (
 			}
 
 			for i, mark := range list {
-				fmt.Printf("[%v] %v\n", i, mark.Url)
+				fmt.Printf("[%d] %s: %s\n", i, mark.Name, mark.Url)
 			}
 
 			return nil

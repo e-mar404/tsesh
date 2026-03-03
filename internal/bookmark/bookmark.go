@@ -21,7 +21,8 @@ var OutofBounds = errors.New("Index given is out of bounds for current bookmark 
 type Data map[string][]Bookmark
 
 type Bookmark struct {
-	Url string `json:"url"`
+	Name string `json:"name"`
+	Url  string `json:"url"`
 }
 
 func (d Data) Add(urls ...string) error {
@@ -32,7 +33,8 @@ func (d Data) Add(urls ...string) error {
 	log.Debug("getting directory", "cwd", cwd)
 
 	for _, rawUrl := range urls {
-		if err := validate(rawUrl); err != nil {
+		u, err := convertToUrl(rawUrl)
+		if err != nil {
 			return err
 		}
 
@@ -42,9 +44,10 @@ func (d Data) Add(urls ...string) error {
 		}
 
 		d[cwd] = append(d[cwd], Bookmark{
-			Url: rawUrl,
+			Name: u.Hostname(),
+			Url:  rawUrl,
 		})
-		log.Info("added to bookmark list", "rawUrl", rawUrl)
+		log.Info("added to bookmark list", "name", u.Hostname(), "rawUrl", rawUrl)
 	}
 	return nil
 }
@@ -97,7 +100,7 @@ func (d *Data) Load() error {
 	return nil
 }
 
-func (d Data) Open(idx int) error {
+func (d Data) OpenIndex(idx int) error {
 	list, err := d.List()
 	if err != nil {
 		return err
@@ -109,6 +112,22 @@ func (d Data) Open(idx int) error {
 	}
 
 	return openUrl(list[idx].Url)
+}
+
+func (d Data) OpenName(name string) error {
+	list, err := d.List()
+	if err != nil {
+		return err
+	}
+
+	for _, item := range list {
+		if item.Name == name {
+			return openUrl(item.Url)
+		}
+	}
+
+	log.Info("no bookmark matched", "name", name)
+	return nil
 }
 
 func (d Data) OpenAll() error {
@@ -160,17 +179,17 @@ func ValidateDataStorage() error {
 	return e.Save()
 }
 
-func validate(rawUrl string) error {
+func convertToUrl(rawUrl string) (*url.URL, error) {
 	u, err := url.Parse(rawUrl)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if u.Scheme == "" {
-		return InvalidUrlScheme
+		return nil, InvalidUrlScheme
 	}
 
-	return nil
+	return u, nil
 }
 
 func has(bookmarks []Bookmark, rawUrl string) bool {
@@ -196,6 +215,7 @@ func openUrl(rawUrl string) error {
 		cmd = "xdg-open"
 		args = []string{rawUrl}
 	}
+	log.Info("opening bookmark", "rawUrl", rawUrl)
 	log.Debug("executing command based on GOOS", "cmd", cmd, "args", args)
 
 	return exec.Command(cmd, args...).Run()

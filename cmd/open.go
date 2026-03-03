@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"strconv"
-
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/tsesh/internal/bookmark"
 	"github.com/spf13/cobra"
@@ -10,6 +8,8 @@ import (
 
 var (
 	openAll bool
+	name    string
+	id      int
 	openCmd = &cobra.Command{
 		Use:   "open",
 		Short: "open a bookmark by index",
@@ -17,26 +17,29 @@ var (
 			bookmark.ValidateDataStorage,
 			data.Load,
 		),
-		Args: cobra.RangeArgs(0, 1),
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if openAll {
-				if len(args) > 0 {
-					log.Warn("flag -a enabled, opening all bookmarks and ignoring arguments passed")
+				if id != -1 || name != "" {
+					log.Warn("flag -a enabled, opening all bookmarks and ignoring any other flags")
 				}
 
 				return data.OpenAll()
 			}
 
-			idx, err := strconv.Atoi(args[0])
-			if err != nil {
-				return err
+			if id != -1 {
+				return data.OpenIndex(id)
 			}
 
-			return data.Open(idx)
+			return data.OpenName(name)
 		},
 	}
 )
 
 func init() {
 	openCmd.Flags().BoolVarP(&openAll, "all", "a", false, "open all bookmarks for this directory")
+	openCmd.Flags().StringVarP(&name, "name", "n", "", "open bookmark by name")
+	openCmd.Flags().IntVar(&id, "id", -1, "open bookmark by id")
+	openCmd.MarkFlagsMutuallyExclusive("name", "id")
+	openCmd.MarkFlagsOneRequired("all", "name", "id")
 }
