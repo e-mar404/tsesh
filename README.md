@@ -15,7 +15,7 @@ This project is not ready for production use yet but should still be able to
 build and run. You can try it out with the following cmd:
 
 ```bash
-go install github.com/e-mar404/tsesh@v0.1.1
+go install github.com/e-mar404/tsesh@v0.1.2
 ```
 
 In the future it will also be available through nixpkgs/as a nix flake. Right
