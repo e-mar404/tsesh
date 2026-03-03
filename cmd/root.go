@@ -14,6 +14,8 @@ import (
 var (
 	version string
 	verbose bool
+	name    string
+	id      int
 	cfg     = &config.Config{}
 	data    = make(bookmark.Data)
 	rootCmd = &cobra.Command{
