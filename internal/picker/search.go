@@ -68,9 +68,7 @@ func searchPaths(cfg config.Search) []list.Item {
 				}
 			}
 
-			if strings.Contains(d.Name(), ".") {
-				sessionName = "_" + sessionName[1:]
-			}
+			sessionName = strings.ReplaceAll(sessionName, ".", "_")
 
 			if ok := m[sessionName]; ok == (Item{}) {
 				item := Item{
